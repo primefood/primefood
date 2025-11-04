@@ -3,6 +3,50 @@
 (function() {
     'use strict';
 
+    // ========== HAMBURGER MENU ==========
+    function initHamburgerMenu() {
+        const hamburger = document.getElementById('hamburgerBtn');
+        const navMenu = document.getElementById('navMenu');
+        const navLinks = document.querySelectorAll('.main-nav a');
+
+        if (!hamburger || !navMenu) return;
+
+        // Toggle menu
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking on a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Handle dropdown on mobile
+        const dropdownItems = document.querySelectorAll('.dropdown');
+        dropdownItems.forEach(dropdown => {
+            const dropdownLink = dropdown.querySelector('a');
+
+            dropdownLink.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    dropdown.classList.toggle('active');
+                }
+            });
+        });
+    }
+
     // ========== HERO SLIDESHOW ==========
     function initHeroSlideshow() {
         const slides = document.querySelectorAll('.hero-slide');
@@ -222,6 +266,7 @@
     }
 
     function initAll() {
+        initHamburgerMenu();
         initHeroSlideshow();
         initImagePopup();
         initSmoothScroll();

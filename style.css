@@ -75,6 +75,44 @@ a:hover {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 9px 20px 2px;
+    position: relative;
+}
+
+/* Hamburger Menu Button */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 101;
+    position: absolute;
+    right: 20px;
+    top: -50px;
+}
+
+.hamburger span {
+    width: 30px;
+    height: 3px;
+    background-color: var(--color-gray-dark);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
 }
 
 .main-nav > ul {
@@ -583,9 +621,58 @@ a:hover {
 
 /* === RESPONSIVE DESIGN === */
 @media (max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+
     .main-nav > ul {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 70%;
+        max-width: 300px;
+        background-color: var(--color-white);
         flex-direction: column;
-        gap: 10px;
+        justify-content: flex-start;
+        padding: 80px 20px 20px;
+        gap: 20px;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        transition: right 0.3s ease;
+        z-index: 100;
+    }
+
+    .main-nav > ul.active {
+        right: 0;
+    }
+
+    .main-nav li {
+        width: 100%;
+    }
+
+    .main-nav > ul > li > a {
+        display: block;
+        padding: 15px 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--color-gray-light);
+    }
+
+    .dropdown .submenu {
+        position: static;
+        display: none;
+        box-shadow: none;
+        margin: 0;
+        padding-left: 20px;
+        transform: none;
+    }
+
+    .dropdown.active .submenu {
+        display: block;
+    }
+
+    .submenu a {
+        padding: 10px 15px;
+        border-bottom: 1px solid var(--color-gray-light);
     }
 
     .section {
@@ -612,6 +699,18 @@ a:hover {
     .image-popup-next {
         font-size: 30px;
         padding: 5px 15px;
+    }
+
+    .hero-section {
+        padding: 20px 0;
+    }
+
+    .hero-slideshow {
+        height: 300px;
+    }
+
+    .hero-slide img {
+        height: 300px;
     }
 }
 
