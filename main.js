@@ -93,3 +93,187 @@
     });
   }
 })();
+
+// Product Gallery Image Popup
+(function() {
+  'use strict';
+
+  // Wait for DOM to be fully loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initImagePopup);
+  } else {
+    initImagePopup();
+  }
+
+  function initImagePopup() {
+    const modal = document.getElementById('imagePopupModal');
+    const popupImage = document.getElementById('popupImage');
+    const closeBtn = document.querySelector('.image-popup-close');
+    const prevBtn = document.querySelector('.image-popup-prev');
+    const nextBtn = document.querySelector('.image-popup-next');
+    const overlay = document.querySelector('.image-popup-overlay');
+    const currentIndexSpan = document.getElementById('currentImageIndex');
+    const totalImagesSpan = document.getElementById('totalImages');
+
+    let currentIndex = 0;
+    let images = [];
+
+    // Find all gallery images in the products section
+    function collectGalleryImages() {
+      images = [];
+      const galleryContainer = document.getElementById('pro-gallery-container-comp-jj43zn07');
+
+      if (!galleryContainer) {
+        console.warn('Gallery container not found');
+        return;
+      }
+
+      const imageElements = galleryContainer.querySelectorAll('img[data-hook="gallery-item-image-img"]');
+
+      imageElements.forEach((img, index) => {
+        // Get the highest resolution image from srcSet
+        const picture = img.closest('picture');
+        const source = picture ? picture.querySelector('source') : null;
+        let highResUrl = img.src;
+
+        if (source && source.srcset) {
+          // Extract all URLs from srcSet
+          const srcSetUrls = source.srcset.split(',').map(s => s.trim().split(' ')[0]);
+          // Get the highest resolution (last one in the list)
+          if (srcSetUrls.length > 0) {
+            highResUrl = srcSetUrls[srcSetUrls.length - 1];
+          }
+        }
+
+        images.push({
+          src: highResUrl,
+          alt: img.alt || 'Product image ' + (index + 1)
+        });
+      });
+
+      // Update total images count
+      if (totalImagesSpan) {
+        totalImagesSpan.textContent = images.length;
+      }
+    }
+
+    // Open modal with specific image
+    function openModal(index) {
+      if (images.length === 0) {
+        collectGalleryImages();
+      }
+
+      if (index < 0 || index >= images.length) return;
+
+      currentIndex = index;
+      popupImage.src = images[currentIndex].src;
+      popupImage.alt = images[currentIndex].alt;
+
+      if (currentIndexSpan) {
+        currentIndexSpan.textContent = currentIndex + 1;
+      }
+
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    // Close modal
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = ''; // Restore scrolling
+    }
+
+    // Show previous image
+    function showPrevImage() {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      popupImage.src = images[currentIndex].src;
+      popupImage.alt = images[currentIndex].alt;
+
+      if (currentIndexSpan) {
+        currentIndexSpan.textContent = currentIndex + 1;
+      }
+    }
+
+    // Show next image
+    function showNextImage() {
+      currentIndex = (currentIndex + 1) % images.length;
+      popupImage.src = images[currentIndex].src;
+      popupImage.alt = images[currentIndex].alt;
+
+      if (currentIndexSpan) {
+        currentIndexSpan.textContent = currentIndex + 1;
+      }
+    }
+
+    // Add click listeners to all gallery item actions
+    function attachClickListeners() {
+      const itemActions = document.querySelectorAll('.item-action[data-hook="item-action"]');
+
+      itemActions.forEach((action) => {
+        action.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const idx = parseInt(this.getAttribute('data-idx'));
+          openModal(idx);
+        });
+      });
+    }
+
+    // Event listeners
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', showPrevImage);
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', showNextImage);
+    }
+
+    if (overlay) {
+      overlay.addEventListener('click', closeModal);
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (!modal.classList.contains('active')) return;
+
+      switch(e.key) {
+        case 'Escape':
+          closeModal();
+          break;
+        case 'ArrowLeft':
+          showPrevImage();
+          break;
+        case 'ArrowRight':
+          showNextImage();
+          break;
+      }
+    });
+
+    // Initialize
+    collectGalleryImages();
+    attachClickListeners();
+
+    // Re-attach listeners if gallery content changes dynamically
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.addedNodes.length > 0) {
+          collectGalleryImages();
+          attachClickListeners();
+        }
+      });
+    });
+
+    const galleryContainer = document.getElementById('pro-gallery-container-comp-jj43zn07');
+    if (galleryContainer) {
+      observer.observe(galleryContainer, {
+        childList: true,
+        subtree: true
+      });
+    }
+  }
+})();
