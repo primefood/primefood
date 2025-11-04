@@ -440,13 +440,24 @@ a:hover {
     margin-top: 30px;
 }
 
-.social-links a {
+.social-icon {
     display: block;
-    transition: transform 0.3s ease;
+    width: 36px;
+    height: 36px;
+    color: var(--color-gray-dark);
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.social-links a:hover {
-    transform: scale(1.1);
+.social-icon:hover {
+    transform: scale(1.15);
+}
+
+.facebook-icon:hover {
+    color: #1877f2;
+}
+
+.instagram-icon:hover {
+    color: #e4405f;
 }
 
 /* === FOOTER === */
